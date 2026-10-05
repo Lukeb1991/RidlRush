@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#110b17">
+<title>Ridl Rush · Puzzl Lab</title>
+<meta name="description" content="Three riddles. Sixty seconds each. A new daily riddle puzzle from Puzzl Lab.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Puzzl Lab">
+<meta property="og:title" content="Ridl Rush · Three riddles. Beat the sand.">
+<meta property="og:description" content="Three riddles. Sixty seconds each. A new daily riddle puzzle from Puzzl Lab.">
+<meta property="og:url" content="https://lukeb1991.github.io/RidlRush/">
+<meta property="og:image" content="https://lukeb1991.github.io/RidlRush/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lukeb1991.github.io/RidlRush/og-image.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⏳%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&family=DM+Serif+Display:ital@0;1&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#110b17;--dusk:#1b1224;--dusk2:#251830;--line:rgba(232,184,106,.22);
+  --sand:#e8b86a;--sand2:#f5d9a0;--wax:#f6eee2;--mist:#a597b0;
+  --ember:#ff6b3d;--ok:#6fdc9c;--amber:#f2b33d;--none:#2e2238;
+  --purple:#a855f7;--pink:#ec4899;--grad:linear-gradient(90deg,var(--purple),var(--pink));
+  --serif:'DM Serif Display',Georgia,serif;--book:'Fraunces',Georgia,serif;
+  --mono:'DM Mono',ui-monospace,monospace;--sans:'DM Sans',system-ui,sans-serif;
+  color-scheme:dark;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Puzzl Lab is a dark brand: same palette whatever the viewer's theme */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--night:#110b17;--wax:#f6eee2}}
+:root[data-theme="dark"]{--night:#110b17;--wax:#f6eee2}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:var(--sans);color:var(--wax);-webkit-font-smoothing:antialiased;background-color:var(--night);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='520' font-family='Georgia,serif' fill='%23ffffff' fill-opacity='.035'%3E%3Ctext x='24' y='96' font-size='88' transform='rotate(-12 24 96)'%3E%3F%3C/text%3E%3Ctext x='300' y='70' font-size='46' transform='rotate(14 300 70)'%3E%3F%3C/text%3E%3Ctext x='330' y='330' font-size='110' transform='rotate(-8 330 330)'%3E%3F%3C/text%3E%3Ctext x='60' y='420' font-size='54' transform='rotate(18 60 420)'%3E%3F%3C/text%3E%3Ctext x='190' y='250' font-size='30'%3E%3F%3C/text%3E%3C/svg%3E"),
+    radial-gradient(ellipse 90% 45% at 50% -6%,rgba(232,184,106,.17),transparent 62%) fixed,var(--night)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--pink);outline-offset:3px;border-radius:6px}
+[hidden]{display:none!important}
+
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 32px}
+.top{display:flex;align-items:center;justify-content:space-between;height:44px}
+.icon{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--dusk);color:var(--sand2);font:500 16px var(--mono);display:grid;place-items:center}
+.icon svg{width:15px;height:15px;fill:currentColor}
+.kicker{font:500 12px var(--mono);letter-spacing:.3em;color:var(--sand);text-transform:uppercase}
+
+/* Hourglass: it is the timer */
+.hg{width:62px;height:92px;margin:6px auto 0}
+.hg svg{width:100%;height:100%;overflow:visible}
+#hgInner{transform-origin:30px 45px;transition:transform .65s cubic-bezier(.6,0,.3,1)}
+#hgInner.flip{transform:rotate(180deg)}
+.hg .frame{fill:#8a6232}.hg .plate{fill:#c9944f}
+.hg .glass{fill:rgba(255,255,255,.04);stroke:rgba(245,217,160,.55);stroke-width:1.2}
+.hg .sandfill{fill:var(--sand)}
+.hg #stream{stroke:var(--sand);stroke-width:1.3;stroke-dasharray:2 2.5;opacity:0}
+.hg.running #stream{opacity:1;animation:fall .5s linear infinite}
+.hg.urgent .sandfill,.hg.urgent #stream{fill:var(--ember);stroke:var(--ember)}
+.hg.urgent svg{filter:drop-shadow(0 0 10px rgba(255,107,61,.45))}
+@keyframes fall{to{stroke-dashoffset:-9}}
+
+h1{font:400 60px/1 var(--serif);text-align:center;margin-top:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font:italic 400 22px var(--serif);color:var(--sand2);text-align:center;margin-top:4px}
+
+/* Status row */
+.status{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:20px 2px 12px}
+.candles{display:flex;gap:8px}
+.candle{width:16px;height:30px;display:block}
+.candle svg{width:100%;height:100%;overflow:visible}
+.candle .wax{fill:#efe3cc}.candle .drip{fill:#fff8ea}.candle .wick{fill:#3b2a1c}
+.candle{filter:drop-shadow(0 -2px 5px rgba(255,190,90,.45))}.candle.out{filter:none}
+.candle .flame{transform-box:fill-box;transform-origin:50% 100%;animation:flicker 2.4s ease-in-out infinite}
+.candle:nth-child(2) .flame{animation-delay:-.8s}.candle:nth-child(3) .flame{animation-delay:-1.5s}
+.candle .smoke{fill:none;stroke:rgba(255,255,255,.35);stroke-width:1;opacity:0}
+.candle.out .flame{opacity:0;transform:scale(.2);transition:.35s;animation:none}
+.candle.out .wax{fill:#5e5068}.candle.out .drip{fill:#6c5d77}
+.candle.out.fresh .smoke{animation:smoke 1.4s ease-out}
+@keyframes flicker{0%,100%{transform:scale(1,1)}40%{transform:scale(.92,1.08) rotate(-3deg)}70%{transform:scale(1.05,.95) rotate(2deg)}}
+@keyframes smoke{0%{opacity:.8;transform:translateY(0)}100%{opacity:0;transform:translateY(-12px)}}
+.pips{display:flex;gap:6px}
+.pip{width:14px;height:14px;border-radius:4px;background:var(--none);border:1px solid transparent}
+.pip.cur{border-color:var(--sand);background:transparent}
+.clean{background:var(--ok)}.helped{background:var(--amber)}.missed{background:var(--ember)}.skipped{background:var(--none)}
+.clock{justify-self:end;font:500 22px var(--mono);color:var(--wax);font-variant-numeric:tabular-nums}
+.clock.warn{color:var(--amber)}.clock.urgent{color:var(--ember);animation:throb 1s ease-in-out infinite}
+@keyframes throb{50%{opacity:.55}}
+
+/* Riddle card, lit by a candle */
+.card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;padding:16px 18px 20px;
+  background:radial-gradient(ellipse 80% 70% at 50% 0%,rgba(232,184,106,.11),transparent 70%),var(--dusk)}
+.card::after{content:"?";position:absolute;right:-6px;bottom:-46px;font:400 170px/1 var(--serif);color:rgba(232,184,106,.06);pointer-events:none}
+.card-top{display:flex;justify-content:space-between;align-items:center;font:500 12px var(--mono);letter-spacing:.08em;color:var(--mist);margin-bottom:14px}
+.diff{padding:3px 10px;border-radius:999px;border:1px solid currentColor;font-size:11px}
+.diff.d0{color:var(--ok)}.diff.d1{color:var(--amber)}.diff.d2{color:var(--ember)}
+.riddle{position:relative;z-index:1;font:400 22px/1.45 var(--book);font-variation-settings:'opsz' 30;min-height:4.35em;color:var(--wax)}
+.caret{display:inline-block;width:2px;height:1em;background:var(--sand);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.intro{font:400 17px/1.55 var(--book);color:#e3d8e8}
+.intro b{font-weight:500;color:var(--sand2)}
+.hint{position:relative;z-index:1;margin-top:14px;padding:10px 12px;border-left:2px solid var(--amber);background:rgba(242,179,61,.08);border-radius:0 8px 8px 0;font:italic 400 16px/1.45 var(--book);color:#f5e3bd}
+.answer{position:relative;z-index:1;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);text-align:center}
+.answer .lab{display:block;font:500 11px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--mist);margin-bottom:4px}
+.word{display:block;font:400 38px/1.1 var(--serif);color:var(--sand2)}
+.word.lost{color:#ff9a76}
+.ltr{display:inline-block;animation:pop .45s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes pop{from{opacity:0;transform:translateY(-14px) scale(.5)}to{opacity:1;transform:none}}
+
+.guessrow{display:flex;gap:8px;margin-top:14px}
+input{flex:1;min-width:0;height:52px;border-radius:14px;border:1.5px solid var(--line);background:#160f1d;color:var(--wax);font:500 17px var(--sans);padding:0 16px;outline:none}
+input::placeholder{color:#76687f}
+input:focus-visible{outline:none}
+input:focus{border-color:var(--sand);box-shadow:0 0 0 3px rgba(232,184,106,.16)}
+.btn{height:52px;border-radius:14px;padding:0 22px;font:700 15px var(--sans);color:#fff;background:var(--grad);display:inline-flex;align-items:center;justify-content:center}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--sand2)}
+.btn.wide{width:100%}
+.tries{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.tries span{font:500 12px var(--mono);color:#ff9a76;text-decoration:line-through;padding:3px 8px;border:1px solid rgba(255,107,61,.35);border-radius:6px}
+.msg{min-height:22px;text-align:center;font:500 14px var(--sans);color:var(--mist);margin-top:10px}
+.msg.bad{color:#ff9a76}.msg.good{color:var(--ok)}
+.actions{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
+.hintbtn{font:500 13px var(--mono);color:var(--amber);padding:8px 12px;border-radius:8px}
+.hintbtn:disabled{color:#6f6278;cursor:default}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* End of day */
+.result{position:relative;margin-top:20px;text-align:center;border:1px solid var(--line);border-radius:14px;padding:22px 18px;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,184,106,.13),transparent 70%),var(--dusk);animation:in .5s ease both}
+.result .lab{font:500 11px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--sand)}
+.verdict{font:400 34px/1.1 var(--serif);margin-top:8px}
+.score{font:400 76px/1 var(--serif);margin-top:6px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.score small{font-size:36px}
+.spare{font:italic 400 17px var(--book);color:#e3d8e8;margin-top:2px}
+.squares{display:flex;justify-content:center;gap:8px;margin:16px 0 8px}
+.sq{width:38px;height:38px;border-radius:9px}
+.streak{font:500 13px var(--mono);color:var(--sand2);letter-spacing:.04em}
+.btns{display:flex;gap:8px;margin-top:18px}.btns .btn{flex:1;padding:0 12px}
+.next{font:500 13px var(--mono);color:var(--mist);margin-top:16px}
+.next b{color:var(--sand2);font-weight:500}
+.recap{list-style:none;text-align:left;margin-top:20px;border-top:1px dashed var(--line);padding-top:6px}
+.recap li{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
+.recap li:last-child{border-bottom:0}
+.recap .sq{width:14px;height:14px;border-radius:4px;margin-top:5px}
+.rq{font:400 15px/1.45 var(--book);color:#e3d8e8}
+.ra{font:400 20px var(--serif);color:var(--sand2);margin-top:3px}
+.rt{font:500 12px var(--mono);color:var(--mist);margin-top:4px}
+
+footer{text-align:center;font:400 12px var(--mono);color:var(--mist);margin-top:28px}
+footer b{color:#fff;font-weight:500}
+
+/* Modals */
+.modal{position:fixed;inset:0;background:rgba(8,4,12,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.open{display:flex}
+.sheet{width:100%;max-width:420px;max-height:calc(100% - 20px);overflow:auto;background:var(--dusk);border:1px solid var(--line);border-radius:14px;padding:22px;position:relative;animation:in .3s ease both}
+.sheet h2{font:400 30px var(--serif);margin-bottom:12px}
+.sheet p{font:400 15px/1.55 var(--sans);color:#ddd2e2;margin-bottom:10px}
+.sheet p b{color:var(--wax)}
+.close{position:absolute;top:12px;right:12px}
+.key{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;font:400 14px var(--sans);color:#ddd2e2;margin:6px 0 16px}
+.key i{width:16px;height:16px;border-radius:4px;display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin:8px 0 16px}
+.stats b{display:block;font:400 30px var(--serif)}
+.stats span{font:500 10px var(--mono);color:var(--mist);text-transform:uppercase;letter-spacing:.08em}
+.statlab{font:500 11px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--mist);margin-bottom:6px}
+.bar{display:flex;align-items:center;gap:8px;margin:5px 0;font:500 13px var(--mono)}
+.bar span{width:12px}
+.bar i{display:block;height:20px;min-width:24px;border-radius:4px;background:var(--dusk2);font-style:normal;text-align:right;padding-right:7px;line-height:20px}
+.bar i.hl{background:var(--grad)}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--sand2);color:var(--night);font:700 14px var(--sans);padding:10px 18px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:30}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.og{padding:20px;text-align:center}.og canvas{width:100%;max-width:1200px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="clipTop"><path d="M14 9H46C46 28 33 38 31.5 45H28.5C27 38 14 28 14 9Z"/></clipPath>
+    <clipPath id="clipBot"><path d="M28.5 45H31.5C33 52 46 62 46 81H14C14 62 27 52 28.5 45Z"/></clipPath>
+  </defs>
+</svg>
+
+<main class="wrap">
+  <div class="top">
+    <button class="icon" id="helpBtn" aria-label="How to play">?</button>
+    <span class="kicker" id="kicker">Riddle No. 1</span>
+    <button class="icon" id="statsBtn" aria-label="Your stats"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="8" width="3" height="7" rx="1"/><rect x="6.5" y="4" width="3" height="11" rx="1"/><rect x="12" y="1" width="3" height="14" rx="1"/></svg></button>
+  </div>
+
+  <div class="hg" id="hg" aria-hidden="true">
+    <svg viewBox="0 0 60 90">
+      <g id="hgInner">
+        <rect class="frame" x="9" y="6" width="3" height="78" rx="1"/>
+        <rect class="frame" x="48" y="6" width="3" height="78" rx="1"/>
+        <path class="glass" d="M14 9H46C46 28 33 38 31.5 45C33 52 46 62 46 81H14C14 62 27 52 28.5 45C27 38 14 28 14 9Z"/>
+        <rect id="sandTop" class="sandfill" x="10" y="15" width="40" height="30" clip-path="url(#clipTop)"/>
+        <path id="sandBot" class="sandfill" d="M10 81V78Q30 74 50 78V81Z" clip-path="url(#clipBot)"/>
+        <line id="stream" x1="30" y1="45" x2="30" y2="80"/>
+        <rect class="plate" x="4" y="2" width="52" height="7" rx="2"/>
+        <rect class="plate" x="4" y="81" width="52" height="7" rx="2"/>
+      </g>
+    </svg>
+  </div>
+  <h1>Ridl Rush</h1>
+  <p class="sub">Three riddles. Beat the sand.</p>
+
+  <section id="play">
+    <div class="status">
+      <div class="candles" id="candles" role="img" aria-label="3 lives left"></div>
+      <div class="pips" id="pips" role="img" aria-label="Today's progress"></div>
+      <div class="clock" id="clock">1:00</div>
+    </div>
+
+    <article class="card" id="card">
+      <div class="card-top"><span id="cardNo">Riddle 1 of 3</span><span class="diff d0" id="diff">Easy</span></div>
+      <div id="cardBody"></div>
+    </article>
+
+    <div class="guessrow" id="form" hidden>
+      <input id="guess" type="text" autocomplete="off" placeholder="Type your answer" maxlength="40" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Your answer">
+      <button class="btn" type="button" id="answerBtn">Answer</button>
+    </div>
+    <div class="tries" id="tries"></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <div class="actions">
+      <button class="hintbtn" id="hintBtn" hidden disabled>Hint unlocks at 0:30</button>
+      <button class="btn wide" id="goBtn" hidden>Start riddle 1</button>
+    </div>
+  </section>
+
+  <section class="result" id="result" hidden></section>
+  <footer>A new daily riddle puzzle from <b>Puzzl Lab</b></footer>
+</main>
+
+<div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close">✕</button>
+  <h2 id="helpTitle">How to play</h2>
+  <p>Solve <b>three riddles</b> a day. They get harder as you go: easy, medium, then hard.</p>
+  <p>Each riddle has <b>60 seconds</b> on the clock. The sand starts falling once the riddle has appeared.</p>
+  <p>You have <b>three lives for the whole day</b>. A wrong answer snuffs out a candle. If the sand runs out, that riddle is lost, but you keep your lives.</p>
+  <p>Stuck? A hint unlocks with 30 seconds left.</p>
+  <div class="key">
+    <i class="clean"></i><span>Solved first time</span>
+    <i class="helped"></i><span>Solved after a hint or a wrong answer</span>
+    <i class="missed"></i><span>Missed</span>
+    <i class="skipped"></i><span>Not reached</span>
+  </div>
+  <p>Everyone gets the same riddles. New ones arrive every day at 7am UK time.</p>
+  <button class="btn wide" data-close>Let's play</button>
+</div></div>
+
+<div class="modal" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="statsTitle"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close">✕</button>
+  <h2 id="statsTitle">Your stats</h2>
+  <div class="stats" id="statsGrid"></div>
+  <div class="statlab">Riddles solved per day</div>
+  <div id="dist"></div>
+  <p style="margin-top:14px">New riddles in <b id="statsCountdown">--:--:--</b></p>
+</div></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ================= Settings ================= */
+const SITE_URL   = 'https://lukeb1991.github.io/RidlRush/';  // ← your live address (share text + share image)
+const RESET_HOUR = 7;                                       // ← new riddles each day at this hour, UK time
+const LAUNCH     = '2026-10-06';                            // ← date of Riddle No. 1 (UK time)
+const PER_DAY = 3, LIVES = 3, SECS = 60, HINT_AT = 30;
+
+/* ================= Riddles =================
+   Each day runs easy → medium → hard. Day 1 is LAUNCH; after the last day it loops.
+   q: riddle · a: accepted answers (first one is shown) · h: hint
+   d: how to display the answer (optional) · x: exact answers only, no typo allowance (for word-trick riddles) */
+const R = (q, a, h, o = {}) => ({q, a, h, ...o});
+const DAYS = [
+  [ R("I'm tall when I'm young and short when I'm old. What am I?", ["candle"], "I glow brightest in the dark."),
+    R("The more you take, the more you leave behind. What am I?", ["footsteps","footstep","steps","footprints","footprint"], "Think about what you create when you walk."),
+    R("What walks on four legs in the morning, two legs at noon and three legs in the evening?", ["man","human","humans","person","people","human being","mankind","humanity"], "Think of a whole lifetime as a single day.", {d:"A human"}) ],
+  [ R("What has hands but can't clap?", ["clock","watch"], "You'll find me on a wall or a wrist."),
+    R("What starts with T, ends with T and has T in it?", ["teapot","tea pot"], "Time for a brew."),
+    R("I'm a word of three letters. Add two more, and fewer there will be. What word am I?", ["few"], "Read it again, very literally.", {d:"Few", x:true}) ],
+  [ R("What gets wetter the more it dries?", ["towel","tea towel"], "You'll want me after a bath."),
+    R("I have cities, but no houses live there. Mountains, but no trees grow there. Water, but no fish swim there. Roads, but no cars drive there. What am I?", ["map","atlas"], "You unfold me to find your way."),
+    R("The man who made it doesn't want it. The man who bought it doesn't need it. The man who needs it doesn't know it. What is it?", ["coffin","casket"], "We all end up in one eventually.") ],
+  [ R("What has to be broken before you can use it?", ["egg"], "Try one at breakfast."),
+    R("Forwards I'm heavy, backwards I'm not. What am I?", ["ton"], "Read me in reverse.", {d:"Ton", x:true}),
+    R("I have a heart that never beats and leaves that never fall, and you eat me one leaf at a time. What am I?", ["artichoke","globe artichoke"], "A thistle you can eat.") ],
+  [ R("I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", ["echo"], "You'll hear me in mountains and empty halls."),
+    R("What has one head, one foot and four legs?", ["bed"], "You lie in me every night."),
+    R("What starts with an E, ends with an E, and usually holds only one letter?", ["envelope","envelopes"], "Seal me and post me.") ],
+  [ R("What kind of band never plays any music?", ["elastic band","rubber band","elastic","hair band","hairband"], "Stretch me round a bundle of letters.", {d:"An elastic band"}),
+    R("What can you hold in your left hand but never in your right?", ["right elbow","right hand","elbow","right arm","right wrist"], "Try it. Something on the right just won't reach.", {d:"Your right elbow"}),
+    R("If you have me, you want to share me. If you share me, you haven't got me. What am I?", ["secret","secrets"], "Keep it to yourself.") ],
+  [ R("I have a neck but no head, and I wear a cap. What am I?", ["bottle"], "Pour something out of me."),
+    R("Where does today come before yesterday?", ["dictionary"], "Think alphabetically."),
+    R("I'm light as a feather, yet the strongest person can't hold me for more than five minutes. What am I?", ["breath","breathe","air"], "Every living thing needs me but can't keep me for long.") ],
+  [ R("What jumps when it walks and sits when it stands?", ["kangaroo","kangaroos","wallaby"], "Hop over to Australia."),
+    R("I have keys but no locks, a space but no room, and you can enter but never go outside. What am I?", ["keyboard","computer keyboard"], "You're probably near one right now."),
+    R("I'm an odd number. Take away one letter and I become even. What number am I?", ["seven","7"], "Spell it out.", {d:"Seven", x:true}) ],
+  [ R("What has lots of eyes but can't see?", ["potato","potatoes","spud","spuds"], "Mash me, chip me or roast me."),
+    R("What has four wheels and flies?", ["bin lorry","bin wagon","bin truck","bin van","dustcart","dustbin lorry","rubbish truck","rubbish lorry","garbage truck","refuse truck","refuse lorry","refuse collection vehicle"], "It comes round once a week to empty your wheelie bin.", {d:"A bin lorry"}),
+    R("What can go up a chimney down, but can't go down a chimney up?", ["umbrella","brolly"], "You'll want me on a drizzly day.") ],
+  [ R("What has one eye but can't see, and pulls a thread wherever it goes?", ["needle","sewing needle"], "Mind your fingers when you sew."),
+    R("What can run but never walks, has a mouth but never talks, has a head but never weeps, and has a bed but never sleeps?", ["river","stream"], "Find me winding through valleys."),
+    R("It's greater than God and more evil than the devil. The poor have it, the rich need it, and if you eat it, you'll die. What is it?", ["nothing"], "Not a thing.") ],
+  [ R("Which building has the most stories?", ["library","libraries"], "Shh. Borrow a book."),
+    R("I have a head and a tail, but no body. I'm not a snake. What am I?", ["coin","penny","pound coin"], "You flip me when you can't decide."),
+    R("Which English word has three double letters in a row?", ["bookkeeper","bookkeeping","bookkeepers","book keeper"], "I keep the accounts.") ],
+  [ R("What can travel all around the world while staying in a corner?", ["stamp","postage stamp","stamps"], "Stick me on a letter."),
+    R("If you drop me I'm sure to crack, but smile at me and I'll always smile back. What am I?", ["mirror","looking glass"], "Check your hair in me."),
+    R("What can be cracked, made, told and played?", ["joke","jokes"], "Knock knock.") ],
+  [ R("I'm full of holes, but I can still hold water. What am I?", ["sponge"], "Find me by the sink or in the bath."),
+    R("What comes once in a minute, twice in a moment, but never in a thousand years?", ["m","letter m"], "Look at the spelling.", {d:"The letter M", x:true}),
+    R("Two fathers and two sons sit in a boat, but there are only three people on board. Who's the oldest?", ["grandfather","grandad","granddad","grandpa","grandparent","granddaddy"], "Three generations.", {d:"The grandfather"}) ],
+  [ R("Some months have 31 days and some have 30. How many have 28?", ["all","all of them","all 12","12","twelve","all twelve","every month","every one","all months","all the months"], "Don't overthink February.", {d:"All of them", x:true}),
+    R("What kind of room has no doors or windows?", ["mushroom","mushrooms"], "You might find me on toast."),
+    R("I have no life, but I can still die. What am I?", ["battery","batteries"], "Recharge me.") ],
+  [ R("What has lots of keys but can't open a single lock?", ["piano","keyboard"], "Play me."),
+    R("The more you take away from me, the bigger I get. What am I?", ["hole","pit","ditch"], "Grab a spade and start digging."),
+    R("What is always coming but never arrives?", ["tomorrow","future"], "Wait until morning and it's still a day away.") ],
+  [ R("I have a thumb and four fingers, but I'm not alive. What am I?", ["glove","gloves","mitten"], "Pull me on in winter."),
+    R("What is so fragile that saying its name breaks it?", ["silence","quiet"], "Shh."),
+    R("I'm a six-letter word. Take away one letter and twelve remains. What am I?", ["dozens"], "Twelve of something.", {d:"Dozens", x:true}) ],
+  [ R("What can fill a room but takes up no space, and vanishes when you flick a switch?", ["light","lights"], "Switch me on when it gets dark."),
+    R("It's black when you buy it, red when you use it, and grey when you throw it away. What is it?", ["charcoal","coal"], "Light the barbecue."),
+    R("I'm taken from a mine and shut up in a wooden case, from which I'm never released, and yet almost everybody uses me. What am I?", ["pencil lead","pencil","lead","graphite"], "Writers and artists reach for me every day.") ],
+  [ R("What belongs to you, but other people use it more than you do?", ["name","your name"], "People call you by it."),
+    R("Which room can a ghost never enter?", ["living room","livingroom"], "Ghosts aren't exactly alive.", {d:"The living room"}),
+    R("I have a tongue but can't taste, eyelets but can't see, and I'm often tied up. What am I?", ["shoe","shoes","trainer","trainers","boot","boots","sneaker","sneakers"], "You'll find me on your feet.") ],
+  [ R("I have four legs and a top, but I never walk anywhere. What am I?", ["table","desk","dining table"], "Dinner is served on me."),
+    R("Which word gets shorter when you add two letters to it?", ["short"], "Add two letters and see.", {d:"Short", x:true}),
+    R("I fly without wings and cry without eyes. Wherever I go, darkness follows. What am I?", ["cloud","clouds","rain cloud","raincloud","storm cloud","thundercloud"], "Look up on a grey day.") ],
+  [ R("What has lots of teeth but never bites, and tames your hair each morning?", ["comb","hairbrush","brush"], "Run me through your hair."),
+    R("What can you serve but never eat?", ["tennis ball","ball","volleyball","shuttlecock"], "Think of Wimbledon."),
+    R("I turn once, and what is out can't get in. I turn again, and what is in can't get out. What am I?", ["key","lock"], "Keep me on a ring in your pocket.") ],
+  [ R("What can you catch but never throw?", ["cold","common cold","breath","flu","the flu"], "Wrap up warm or you might get one.", {d:"A cold"}),
+    R("I have branches, but no fruit, no trunk and no leaves. What am I?", ["bank","banks"], "You might keep your money with me."),
+    R("What word is it that, after you take away the whole, some still remains?", ["wholesome"], "It describes a hearty, healthy meal.") ],
+  [ R("What goes up but never comes down?", ["age","your age"], "It rises by one every birthday.", {d:"Your age"}),
+    R("Which word is spelled wrong in every dictionary?", ["wrong"], "Take the question literally.", {d:"Wrong", x:true}),
+    R("You throw away the outside and cook the inside. Then you eat the outside and throw away the inside. What is it?", ["sweetcorn","sweet corn","corn","corn on the cob","maize"], "A barbecue favourite, dripping with butter.", {d:"Corn on the cob"}) ],
+  [ R("I go through towns and over hills, but I never move. What am I?", ["road","roads","path","street","motorway","railway"], "Cars drive along me."),
+    R("What starts with P, ends with E, and has thousands of letters?", ["post office","postoffice"], "Queue here to send a parcel.", {d:"The post office"}),
+    R("What can you hold without ever touching it?", ["conversation","breath","grudge","thought"], "Two people usually share one.", {d:"A conversation"}) ],
+  [ R("I'm always hungry and must always be fed. The finger I touch will soon turn red. What am I?", ["fire","flame","flames"], "I keep you warm but destroy what I touch."),
+    R("What goes up and down but never moves?", ["stairs","staircase","steps","stairway"], "Mind me on your way to bed.", {d:"The stairs"}),
+    R("What sits in the middle of March and April, but can't be found at the start or end of either?", ["r","letter r"], "Spell the months out.", {d:"The letter R", x:true}) ],
+  [ R("What has its bottom at the top?", ["legs","leg","your legs"], "Look down at yourself.", {d:"Your legs"}),
+    R("I'm found in socks, scarves and mittens, and often in the paws of playful kittens. What am I?", ["yarn","wool","ball of wool","ball of yarn","string","thread"], "Knit with me."),
+    R("I can be long or short, grown or bought, painted or left bare, and round or square. What am I?", ["fingernail","fingernails","nail","nails"], "Look at your fingertips.") ],
+  [ R("The more of me there is, the less you can see. What am I?", ["darkness","dark","fog"], "I arrive when the sun goes down."),
+    R("Which invention lets you see right through a wall?", ["window","windows"], "Open me to let fresh air in."),
+    R("Lay me on my side and I'm everything. Cut me in half and I'm nothing. What am I?", ["8","eight","number 8","number eight"], "I'm a number. Look at my shape.", {d:"The number 8", x:true}) ],
+  [ R("What has words but never speaks?", ["book","books","novel","newspaper"], "Find lots of me on a shelf."),
+    R("What has 13 hearts but no other organs?", ["pack of cards","deck of cards","cards","playing cards","deck","pack"], "Shuffle me before a game.", {d:"A pack of cards"}),
+    R("A man pushes his car up to a hotel and is instantly bankrupt. What's going on?", ["monopoly","playing monopoly","board game"], "Hope he passed Go first.", {d:"He's playing Monopoly"}) ],
+  [ R("What is always in front of you but can never be seen?", ["future","the future"], "It hasn't happened yet.", {d:"The future"}),
+    R("What gets sharper the more you use it?", ["brain","mind","wit"], "You're using it right now.", {d:"Your brain"}),
+    R("Which is heavier: a tonne of feathers or a tonne of bricks?", ["neither","same","the same","both","equal","they weigh the same","they are the same","both the same","same weight","both weigh the same","neither of them","they both weigh the same","both are the same","equal weight","they weigh the same amount","both equal"], "Read the weights again.", {d:"Neither", x:true}) ],
+  [ R("What comes down but never goes up?", ["rain","rainfall","snow"], "Grab an umbrella."),
+    R("What has lots of rings but no fingers, and gets a new one every year?", ["tree","trees","tree trunk","trunk"], "I drop my leaves every autumn."),
+    R("Which word contains all 26 letters?", ["alphabet"], "Read the question very carefully.", {d:"Alphabet"}) ],
+  [ R("What can you break without ever touching it?", ["promise","silence","heart","record","your word"], "You make one, then you're meant to keep it.", {d:"A promise"}),
+    R("I shave every day, but my beard stays the same. Who am I?", ["barber","barbers"], "I work with scissors and clippers.", {d:"A barber"}),
+    R("What runs all the way round the garden but never moves?", ["fence","wall","hedge","garden fence"], "Good ones make good neighbours.", {d:"A fence"}) ],
+];
+const DIFF = ['Easy','Medium','Hard'];
+
+/* ================= Helpers ================= */
+const $ = id => document.getElementById(id);
+const pick = a => a[Math.random() * a.length | 0];
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const esc = s => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+
+function londonNow() {
+  const o = {};
+  new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/London', year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23'})
+    .formatToParts(new Date(Date.now() - RESET_HOUR * 3600e3)).forEach(p => o[p.type] = p.value);
+  return o;
+}
+function dayNumber() {
+  const o = londonNow(), [y, m, d] = LAUNCH.split('-').map(Number);
+  return Math.max(1, Math.round((Date.UTC(+o.year, +o.month - 1, +o.day) - Date.UTC(y, m - 1, d)) / 864e5) + 1);
+}
+function secondsToNext() { const o = londonNow(); return 86400 - (+o.hour * 3600 + +o.minute * 60 + +o.second); }
+const hms = s => [s / 3600 | 0, (s % 3600) / 60 | 0, s % 60].map(n => String(n).padStart(2, '0')).join(':');
+const mmss = s => `${s / 60 | 0}:${String(s % 60).padStart(2, '0')}`;
+
+/* Answer checking: ignores case, accents, punctuation, "a/the/it's…" at the start,
+   plurals, two swapped letters, and a small typo on longer words. Word-trick riddles (x) must be exact. */
+function norm(s) {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/&/g, ' and ').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+const LEAD = /^(it s|its|it is|is it|i am|i m|im|you re|youre|you are|they re|theyre|they are|he s|hes|he is|a|an|the|your|you|my|his|her|some)\s+/;
+function strip(s) { let p; do { p = s; s = s.replace(LEAD, ''); } while (s !== p); return s; }
+const sing = s => s.replace(/ies$/, 'y').replace(/(ss|sh|ch|x)es$/, '$1').replace(/([^s])s$/, '$1');
+function lev(a, b) {   // edit distance; swapping two neighbouring letters counts as one typo
+  const d = Array.from({length: a.length + 1}, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[a.length][b.length];
+}
+const clean = s => strip(norm(s));
+function isRight(guess, r) {
+  const g = clean(guess); if (!g) return false;
+  return r.a.some(ans => {
+    const a = clean(ans);
+    if (g === a) return true;
+    if (r.x) return false;
+    if (sing(g) === sing(a)) return true;
+    if (g.length === a.length && a.length >= 4 && lev(g, a) === 1 && [...g].sort().join() === [...a].sort().join()) return true;  // two letters swapped
+    return a.length >= 7 && lev(g, a) <= (a.length >= 10 ? 2 : 1);
+  });
+}
+const shown = r => r.d || r.a[0].charAt(0).toUpperCase() + r.a[0].slice(1);
+
+/* ================= State ================= */
+const DAY = dayNumber(), TODAY = DAYS[(DAY - 1) % DAYS.length];
+const KEY = 'ridlrush-state', SKEY = 'ridlrush-stats';
+const fresh = () => ({day: DAY, idx: 0, lives: LIVES, stage: 'ready', startAt: 0, hint: false, tries: [], results: [], out: false});
+let S = (() => { const s = store.get(KEY, null); return s && s.day === DAY ? s : fresh(); })();
+const save = () => store.set(KEY, S);
+const blankStats = () => ({played: 0, streak: 0, best: 0, lastDay: 0, perfect: 0, dist: [0, 0, 0, 0], spare: 0});
+let stats = Object.assign(blankStats(), store.get(SKEY, {}));
+const streakNow = () => stats.lastDay >= DAY - 1 ? stats.streak : 0;
+const solvedCount = () => S.results.filter(r => r.k === 'clean' || r.k === 'helped').length;
+const spareTotal = () => S.results.reduce((t, r) => t + (r.t || 0), 0);
+
+const RIGHT = ["Brilliant!", "Sharp mind!", "Got it!", "Nicely solved!", "Spot on!"];
+const WRONG = ["Not quite.", "Think again.", "Not that one.", "Close, but no."];
+
+/* ================= Hourglass + clock ================= */
+function setSand(f) {
+  f = Math.max(0, Math.min(1, f));
+  const ht = 30 * f, hb = 3 + 27 * (1 - f), yb = 81 - hb;
+  $('sandTop').setAttribute('y', 45 - ht); $('sandTop').setAttribute('height', ht);
+  $('sandBot').setAttribute('d', `M10 81V${yb + 3}Q30 ${yb - 3} 50 ${yb + 3}V81Z`);
+  $('stream').setAttribute('y2', yb + 1);
+}
+function remaining() {
+  if (S.stage !== 'play') return SECS;
+  return Math.max(0, Math.min(SECS, SECS - (Date.now() - S.startAt) / 1000));
+}
+let lastSec = -1;
+function paintClock(r, force) {
+  const s = Math.ceil(r);
+  setSand(r / SECS);
+  const running = S.stage === 'play' && Date.now() >= S.startAt && r > 0;
+  $('hg').classList.toggle('running', running);
+  $('hg').classList.toggle('urgent', S.stage === 'play' && s <= 10);
+  if (s === lastSec && !force) return;
+  lastSec = s;
+  const c = $('clock');
+  c.textContent = mmss(s);
+  c.className = 'clock' + (S.stage === 'play' ? (s <= 10 ? ' urgent' : s <= 20 ? ' warn' : '') : '');
+  const hb = $('hintBtn');
+  if (S.stage === 'play' && !S.hint) {
+    hb.hidden = false;
+    const open = s <= HINT_AT;
+    hb.disabled = !open;
+    hb.textContent = open ? 'Use a hint' : `Hint unlocks at ${mmss(HINT_AT)}`;
+  } else hb.hidden = true;
+}
+let raf = 0;
+function loop() {
+  cancelAnimationFrame(raf);
+  const step = () => {
+    if (S.stage !== 'play') return;
+    const r = remaining();
+    paintClock(r);
+    if (r <= 0) { timeUp(); return; }
+    raf = requestAnimationFrame(step);
+  };
+  step();
+}
+function flipGlass(done) {
+  const g = $('hgInner');
+  if (reduceMotion) { setSand(1); done && done(); return; }
+  g.classList.add('flip');
+  setTimeout(() => {
+    g.style.transition = 'none'; g.classList.remove('flip'); setSand(1);
+    void g.getBoundingClientRect(); g.style.transition = '';
+    done && done();
+  }, 650);
+}
+
+/* ================= Rendering ================= */
+function say(t, type) { const m = $('msg'); m.textContent = t; m.className = 'msg' + (type ? ' ' + type : ''); }
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1800); }
+const CANDLE = '<svg viewBox="0 0 20 38" aria-hidden="true"><path class="smoke" d="M10 12c-2-3 2-5 0-8s2-4 0-4"/><defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".55" stop-color="#ffc861"/><stop offset="1" stop-color="#ff7b3a"/></linearGradient></defs><path class="flame" fill="url(#fg)" d="M10 1c3 4 4.3 6.6 4.3 8.6a4.3 4.3 0 0 1-8.6 0C5.7 7.6 7 5 10 1z"/><rect class="wick" x="9.4" y="11" width="1.2" height="4"/><rect class="wax" x="4" y="14" width="12" height="24" rx="2"/><path class="drip" d="M4 17h5v5a2 2 0 0 1-4 0v-5z"/></svg>';
+let lastLives = S.lives;
+
+function renderStatus() {
+  $('kicker').textContent = 'Riddle No. ' + DAY;
+  $('candles').innerHTML = Array.from({length: LIVES}, (_, i) =>
+    `<span class="candle${i >= S.lives ? ' out' : ''}${i >= S.lives && i < lastLives ? ' fresh' : ''}">${CANDLE}</span>`).join('');
+  $('candles').setAttribute('aria-label', `${S.lives} ${S.lives === 1 ? 'life' : 'lives'} left`);
+  lastLives = S.lives;
+  $('pips').innerHTML = Array.from({length: PER_DAY}, (_, i) => {
+    const r = S.results[i];
+    return `<span class="pip ${r ? r.k : i === S.idx ? 'cur' : ''}"></span>`;
+  }).join('');
+}
+
+function render(opts = {}) {
+  renderStatus();
+  if (S.stage === 'done') { $('play').hidden = true; showResult(); return; }
+  $('play').hidden = false; $('result').hidden = true;
+  const r = TODAY[S.idx];
+  $('cardNo').textContent = `Riddle ${S.idx + 1} of ${PER_DAY}`;
+  $('diff').textContent = DIFF[S.idx]; $('diff').className = 'diff d' + S.idx;
+
+  let body = '';
+  if (S.stage === 'ready') {
+    body = `<p class="intro">Three riddles, from easy to hard. You get <b>60 seconds</b> for each and <b>three lives</b> for the whole day.</p>
+            <p class="intro" style="margin-top:10px">The sand starts falling as soon as the riddle appears.</p>`;
+  } else {
+    body = `<p class="riddle" id="riddle">${opts.typing ? '' : esc(r.q)}</p>`;
+    if (S.hint) body += `<div class="hint">Hint: ${esc(r.h)}</div>`;
+    if (S.stage === 'between') {
+      const res = S.results[S.idx], won = res && (res.k === 'clean' || res.k === 'helped');
+      const letters = [...shown(r)].map((ch, i) => `<span class="ltr" style="animation-delay:${i * .05}s">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('');
+      body += `<div class="answer"><span class="lab">${won ? 'You got it' : 'The answer was'}</span><b class="word${won ? '' : ' lost'}">${opts.animate ? letters : esc(shown(r))}</b></div>`;
+    }
+  }
+  $('cardBody').innerHTML = body;
+
+  $('form').hidden = S.stage !== 'play';
+  $('tries').innerHTML = S.stage === 'play' ? S.tries.map(t => `<span>${esc(t)}</span>`).join('') : '';
+  const go = $('goBtn');
+  if (S.stage === 'ready') { go.hidden = false; go.textContent = `Start riddle ${S.idx + 1}`; }
+  else if (S.stage === 'between') { go.hidden = false; go.textContent = S.results.length >= PER_DAY ? 'See your results' : `Next riddle`; }
+  else go.hidden = true;
+
+  if (S.stage === 'ready') { setSand(0); lastSec = -1; $('clock').textContent = mmss(SECS); $('clock').className = 'clock'; $('hintBtn').hidden = true; $('hg').classList.remove('running', 'urgent'); }
+  else if (S.stage === 'between') { const t = (S.results[S.idx] || {}).t || 0; setSand(t / SECS); lastSec = -1; paintClock(t, true); }
+  else { lastSec = -1; paintClock(remaining(), true); loop(); }
+}
+
+/* ================= Game flow ================= */
+let typeTimer = 0;
+function typewrite(el, text, ms) {
+  clearInterval(typeTimer);
+  if (reduceMotion || !ms) { el.textContent = text; return; }
+  let i = 0;
+  const step = Math.max(1, Math.round(text.length / (ms / 16)));
+  typeTimer = setInterval(() => {
+    i = Math.min(text.length, i + step);
+    el.innerHTML = esc(text.slice(0, i)) + (i < text.length ? '<span class="caret"></span>' : '');
+    if (i >= text.length) clearInterval(typeTimer);
+  }, 16);
+}
+
+function startRiddle() {
+  const r = TODAY[S.idx];
+  const flipMs = reduceMotion ? 0 : 650, typeMs = reduceMotion ? 0 : Math.min(2600, r.q.length * 14);
+  S.stage = 'play'; S.hint = false; S.tries = [];
+  S.startAt = Date.now() + flipMs + typeMs + (reduceMotion ? 0 : 200);
+  save(); say('');
+  render({typing: true});
+  $('guess').value = ''; $('guess').focus({preventScroll: true});
+  flipGlass(() => typewrite($('riddle'), r.q, typeMs));
+}
+
+function resolve(result, msg, type) {
+  clearInterval(typeTimer);
+  S.results.push(result);
+  if (S.out) while (S.results.length < PER_DAY) S.results.push({k: 'skipped', t: 0});
+  S.stage = 'between'; save();
+  render({animate: true});
+  say(msg, type);
+  $('goBtn').focus({preventScroll: true});
+}
+
+function onGuess(e) {
+  if (e) e.preventDefault();
+  if (S.stage !== 'play') return;
+  const inp = $('guess'), v = inp.value.trim();
+  if (!v) { say('Type an answer first.', 'bad'); return; }
+  const left = remaining();
+  if (left <= 0) { timeUp(); return; }
+  if (S.tries.some(t => clean(t) === clean(v))) { say("You've already tried that one.", 'bad'); inp.select(); return; }
+  const r = TODAY[S.idx];
+  inp.value = '';
+  if (isRight(v, r)) {
+    const t = Math.ceil(left);
+    resolve({k: S.tries.length || S.hint ? 'helped' : 'clean', t}, `${pick(RIGHT)} ${t}s to spare.`, 'good');
+    return;
+  }
+  S.tries.push(v); S.lives--;
+  if (S.lives <= 0) { S.out = true; resolve({k: 'missed', t: 0}, 'That was your last life.', 'bad'); return; }
+  save(); renderStatus();
+  $('tries').innerHTML = S.tries.map(t => `<span>${esc(t)}</span>`).join('');
+  const c = $('card'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake');
+  say(`${pick(WRONG)} ${S.lives} ${S.lives === 1 ? 'life' : 'lives'} left.`, 'bad');
+  inp.focus({preventScroll: true});
+}
+
+function timeUp() {
+  if (S.stage !== 'play') return;
+  resolve({k: 'missed', t: 0}, 'The sand ran out.', 'bad');
+}
+
+function useHint() {
+  if (S.stage !== 'play' || S.hint || remaining() > HINT_AT) return;
+  S.hint = true; save();
+  const h = document.createElement('div'); h.className = 'hint'; h.textContent = 'Hint: ' + TODAY[S.idx].h;
+  $('cardBody').appendChild(h);
+  $('hintBtn').hidden = true;
+  $('guess').focus({preventScroll: true});
+}
+
+function next() {
+  if (S.stage === 'ready') { startRiddle(); return; }
+  if (S.stage !== 'between') return;
+  if (S.results.length >= PER_DAY) { finish(); return; }
+  S.idx++; startRiddle();
+}
+
+function finish() {
+  S.stage = 'done'; save(); record(); render();
+  $('result').scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block: 'start'});
+}
+
+function record() {
+  if (stats.lastDay === DAY) return;
+  const n = solvedCount();
+  stats.played++;
+  stats.streak = stats.lastDay === DAY - 1 ? stats.streak + 1 : 1;   // a missed day breaks the streak
+  stats.best = Math.max(stats.best, stats.streak);
+  stats.lastDay = DAY;
+  stats.dist[n]++;
+  if (n === PER_DAY) stats.perfect++;
+  stats.spare += spareTotal();
+  store.set(SKEY, stats);
+}
+
+/* ================= Results ================= */
+function verdict() {
+  const n = solvedCount();
+  if (n === 3) return S.results.every(r => r.k === 'clean') ? 'Flawless' : 'Riddle master';
+  if (n === 2) return 'Sharp mind';
+  if (n === 1) return 'Close call';
+  return S.out ? 'Snuffed out' : 'Stumped';
+}
+function showResult() {
+  const n = solvedCount(), sp = spareTotal(), st = streakNow();
+  $('result').hidden = false;
+  $('result').innerHTML = `
+    <div class="lab">Riddle No. ${DAY}</div>
+    <h2 class="verdict">${verdict()}</h2>
+    <div class="score">${n}<small>/${PER_DAY}</small></div>
+    <p class="spare">${n ? `solved, with ${mmss(sp)} to spare` : 'solved today'}</p>
+    <div class="squares">${S.results.map(r => `<span class="sq ${r.k}"></span>`).join('')}</div>
+    <p class="streak">Day streak: ${st}</p>
+    <div class="btns"><button class="btn" id="shareImg">Share image</button><button class="btn ghost" id="copyBtn">Copy result</button></div>
+    <p class="next">New riddles in <b id="countdown">--:--:--</b></p>
+    <ol class="recap">${TODAY.map((r, i) => {
+      const res = S.results[i] || {k: 'skipped', t: 0};
+      const label = {clean: `${res.t}s left`, helped: `${res.t}s left`, missed: 'Missed', skipped: 'Not reached'}[res.k];
+      return `<li><span class="sq ${res.k}"></span><div><p class="rq">${esc(r.q)}</p><p class="ra">${esc(shown(r))}</p></div><span class="rt">${label}</span></li>`;
+    }).join('')}</ol>`;
+  $('shareImg').onclick = shareImage;
+  $('copyBtn').onclick = copyResult;
+  setSand(sp / (SECS * PER_DAY));
+  $('hg').classList.remove('running', 'urgent');
+  tick();
+}
+
+const EMOJI = {clean: '🟩', helped: '🟨', missed: '🟥', skipped: '⬛'};
+function shareText() {
+  const n = solvedCount(), sp = spareTotal(), st = streakNow();
+  return `⏳ Ridl Rush #${DAY} ${n}/${PER_DAY}\n${S.results.map(r => EMOJI[r.k]).join('')}` +
+    (n ? `\n⏱ ${mmss(sp)} to spare` : '') + (st > 1 ? `\n🔥 ${st} day streak` : '') + `\n${SITE_URL}`;
+}
+async function copyResult() {
+  const t = shareText();
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  toast('Copied. Paste it in the group chat');
+}
+
+function renderStats() {
+  const s = stats;
+  $('statsGrid').innerHTML = [['Played', s.played], ['Day streak', streakNow()], ['Best', s.best], ['Perfect', s.perfect]]
+    .map(([l, v]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
+  const mx = Math.max(1, ...s.dist), today = S.stage === 'done' ? solvedCount() : -1;
+  $('dist').innerHTML = s.dist.map((v, i) => `<div class="bar"><span>${i}</span><i class="${i === today ? 'hl' : ''}" style="width:${Math.max(8, v / mx * 90)}%">${v}</i></div>`).join('');
+}
+function tick() {
+  const s = secondsToNext();
+  const a = $('countdown'), b = $('statsCountdown');
+  if (a) a.textContent = hms(s);
+  if (b) b.textContent = hms(s);
+  if (s <= 1) setTimeout(() => location.reload(), 1500);
+}
+
+/* ================= Canvas drawing (share image + og-image) ================= */
+async function fontsReady() {
+  try { await Promise.all(["400 100px 'DM Serif Display'", "italic 400 50px 'DM Serif Display'", "500 30px 'DM Mono'", "400 30px 'DM Mono'", "italic 400 40px 'Fraunces'"].map(f => document.fonts.load(f))); } catch (e) {}
+}
+function rrect(x, a, b, w, h, r) {
+  x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r);
+  x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath();
+}
+function bgNight(x, W, H) {
+  x.fillStyle = '#110b17'; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(W / 2, -H * .05, 0, W / 2, -H * .05, H * .8);
+  g.addColorStop(0, 'rgba(232,184,106,.26)'); g.addColorStop(1, 'rgba(232,184,106,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.save(); x.fillStyle = 'rgba(255,255,255,.04)'; x.textAlign = 'center';
+  [[.12, .16, 150, -.2], [.9, .1, 90, .25], [.88, .55, 210, -.12], [.1, .7, 120, .3], [.5, .9, 80, -.1], [.3, .42, 60, .15]].forEach(([fx, fy, s, r]) => {
+    x.save(); x.translate(W * fx, H * fy); x.rotate(r); x.font = `400 ${s}px 'DM Serif Display',Georgia,serif`; x.fillText('?', 0, 0); x.restore();
+  });
+  x.restore();
+}
+function frameLine(x, X, Y, W, H) {
+  x.strokeStyle = 'rgba(232,184,106,.45)'; x.lineWidth = 2; rrect(x, X, Y, W, H, 28); x.stroke();
+  x.strokeStyle = 'rgba(232,184,106,.18)'; x.lineWidth = 1.5; rrect(x, X + 14, Y + 14, W - 28, H - 28, 18); x.stroke();
+}
+const GLASS = new Path2D('M14 9H46C46 28 33 38 31.5 45C33 52 46 62 46 81H14C14 62 27 52 28.5 45C27 38 14 28 14 9Z');
+const CLIP_T = new Path2D('M14 9H46C46 28 33 38 31.5 45H28.5C27 38 14 28 14 9Z');
+const CLIP_B = new Path2D('M28.5 45H31.5C33 52 46 62 46 81H14C14 62 27 52 28.5 45Z');
+function glassDraw(x, cx, top, scale, f, alpha) {
+  x.save(); x.globalAlpha = alpha || 1; x.translate(cx - 30 * scale, top); x.scale(scale, scale);
+  x.fillStyle = '#8a6232'; x.fillRect(9, 6, 3, 78); x.fillRect(48, 6, 3, 78);
+  x.fillStyle = 'rgba(255,255,255,.05)'; x.fill(GLASS);
+  const ht = 30 * f, hb = 3 + 27 * (1 - f), yb = 81 - hb;
+  x.save(); x.clip(CLIP_T); x.fillStyle = '#e8b86a'; x.fillRect(10, 45 - ht, 40, ht); x.restore();
+  x.save(); x.clip(CLIP_B); x.fillStyle = '#e8b86a'; x.beginPath(); x.moveTo(10, 81); x.lineTo(10, yb + 3); x.quadraticCurveTo(30, yb - 3, 50, yb + 3); x.lineTo(50, 81); x.closePath(); x.fill(); x.restore();
+  x.strokeStyle = 'rgba(245,217,160,.6)'; x.lineWidth = 1.2; x.stroke(GLASS);
+  x.fillStyle = '#c9944f'; rrect(x, 4, 2, 52, 7, 2); x.fill(); rrect(x, 4, 81, 52, 7, 2); x.fill();
+  x.restore();
+}
+function text(x, t, cx, y, font, fill, ls) {
+  x.font = font; x.fillStyle = fill; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  if ('letterSpacing' in x) x.letterSpacing = ls || '0px';
+  x.fillText(t, cx, y);
+  if ('letterSpacing' in x) x.letterSpacing = '0px';
+}
+function gradTitle(x, t, cx, y, size) {
+  const font = `400 ${size}px 'DM Serif Display',Georgia,serif`; x.font = font;
+  const w = x.measureText(t).width, g = x.createLinearGradient(cx - w / 2, 0, cx + w / 2, 0);
+  g.addColorStop(0, '#a855f7'); g.addColorStop(1, '#ec4899');
+  text(x, t, cx, y, font, g);
+}
+function footerLine(x, cx, y, size) {
+  const a = 'A new daily riddle puzzle from ', b = 'Puzzl Lab';
+  const fa = `400 ${size}px 'DM Mono',monospace`, fb = `500 ${size}px 'DM Mono',monospace`;
+  x.font = fa; const wa = x.measureText(a).width; x.font = fb; const wb = x.measureText(b).width;
+  const sx = cx - (wa + wb) / 2; x.textAlign = 'left';
+  x.font = fa; x.fillStyle = '#a597b0'; x.fillText(a, sx, y);
+  x.font = fb; x.fillStyle = '#ffffff'; x.fillText(b, sx + wa, y);
+}
+function pill(x, t, cx, y, h, size) {
+  const font = `italic 400 ${size}px 'Fraunces',Georgia,serif`; x.font = font;
+  const w = x.measureText(t).width + h;
+  rrect(x, cx - w / 2, y, w, h, h / 2); x.fillStyle = '#1b1224'; x.fill(); x.strokeStyle = 'rgba(232,184,106,.5)'; x.lineWidth = 2; x.stroke();
+  text(x, t, cx, y + h / 2 + size * .33, font, '#f5d9a0');
+  return w;
+}
+const SQ_COL = {clean: '#6fdc9c', helped: '#f2b33d', missed: '#ff6b3d', skipped: '#2e2238'};
+
+async function drawShare() {
+  await fontsReady();
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  bgNight(x, W, H);
+  frameLine(x, 60, 60, 960, 1230);
+  const n = solvedCount(), sp = spareTotal(), st = streakNow();
+  glassDraw(x, 540, 120, 2.3, sp / (SECS * PER_DAY));
+  text(x, `RIDDLE NO. ${DAY}`, 540, 380, "500 30px 'DM Mono',monospace", '#e8b86a', '10px');
+  gradTitle(x, 'Ridl Rush', 540, 515, 140);
+  text(x, 'Three riddles. Beat the sand.', 540, 585, "italic 400 50px 'DM Serif Display',Georgia,serif", '#f5d9a0');
+  const s = 170, gap = 28, sx = 540 - (PER_DAY * s + (PER_DAY - 1) * gap) / 2;
+  S.results.forEach((r, i) => { rrect(x, sx + i * (s + gap), 660, s, s, 30); x.fillStyle = SQ_COL[r.k]; x.fill(); });
+  text(x, n ? `SOLVED ${n} OF ${PER_DAY}, ${mmss(sp)} TO SPARE` : 'THE SAND WON TODAY', 540, 912, "500 32px 'DM Mono',monospace", '#f6eee2', '3px');
+  if (st > 1) text(x, `${st} DAY STREAK`, 540, 966, "500 30px 'DM Mono',monospace", '#e8b86a', '6px');
+  pill(x, '“Can you beat the sand?”', 540, 1010, 90, 42);
+  text(x, SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, ''), 540, 1180, "400 28px 'DM Mono',monospace", '#a597b0');
+  footerLine(x, 540, 1328, 26);
+  return cv;
+}
+async function shareImage() {
+  const cv = await drawShare();
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  const file = new File([blob], `ridl-rush-${DAY}.png`, {type: 'image/png'});
+  if (navigator.canShare && navigator.canShare({files: [file]})) {
+    try { await navigator.share({files: [file], text: shareText()}); } catch (e) {}
+    return;
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('Image saved');
+}
+
+async function drawOG() {
+  await fontsReady();
+  const W = 1200, H = 630, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  bgNight(x, W, H);
+  frameLine(x, 110, 46, 980, 536);
+  glassDraw(x, 240, 195, 2.2, .62, .8);
+  glassDraw(x, 960, 195, 2.2, .62, .8);
+  text(x, "TODAY'S RIDDLES", 600, 160, "500 22px 'DM Mono',monospace", '#e8b86a', '8px');
+  gradTitle(x, 'Ridl Rush', 600, 282, 118);
+  text(x, 'Three riddles. Beat the sand.', 600, 345, "italic 400 44px 'DM Serif Display',Georgia,serif", '#f5d9a0');
+  text(x, '60 seconds each. Three lives. Every day.', 600, 395, "italic 400 28px 'Fraunces',Georgia,serif", '#a597b0');
+  const pills = ['“Hands but can\u2019t clap”', '“Wetter as it dries”', '“Four legs in the morning”'];
+  x.font = "italic 400 23px 'Fraunces',Georgia,serif";
+  const ws = pills.map(p => x.measureText(p).width + 52), total = ws.reduce((a, c) => a + c, 0) + 32;
+  let px = 600 - total / 2;
+  pills.forEach((p, i) => { pill(x, p, px + ws[i] / 2, 440, 52, 23); px += ws[i] + 16; });
+  footerLine(x, 600, 612, 20);
+  return cv;
+}
+
+/* ================= Start ================= */
+function openM(id) { $(id).classList.add('open'); const c = $(id).querySelector('[data-close]'); c && c.focus({preventScroll: true}); }
+function init() {
+  render();
+  $('answerBtn').addEventListener('click', onGuess);
+  $('guess').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) onGuess(e); });
+  $('goBtn').onclick = next;
+  $('hintBtn').onclick = useHint;
+  $('helpBtn').onclick = () => openM('helpModal');
+  $('statsBtn').onclick = () => { renderStats(); tick(); openM('statsModal'); };
+  document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => {
+    if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('open');
+  }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); });
+  if (!store.get('ridlrush-seen', false)) { openM('helpModal'); store.set('ridlrush-seen', true); }
+  setInterval(() => { tick(); if (S.stage === 'play' && remaining() <= 0) timeUp(); }, 500);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    if (dayNumber() !== DAY) location.reload();
+    else if (S.stage === 'play') loop();
+  });
+}
+
+if (new URLSearchParams(location.search).has('og')) {
+  document.body.innerHTML = '<div class="og"><p class="kicker" style="margin-bottom:12px">og-image, 1200×630</p><div id="ogc"></div><button class="btn" id="ogdl" style="margin-top:16px">Download og-image.png</button></div>';
+  drawOG().then(cv => {
+    $('ogc').appendChild(cv);
+    $('ogdl').onclick = () => cv.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'og-image.png'; a.click(); }, 'image/png');
+  });
+} else {
+  init();
+}
+</script>
+</body>
+</html>
