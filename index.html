@@ -278,7 +278,7 @@ footer b{color:#fff;font-weight:500}
 /* ================= Settings ================= */
 const SITE_URL   = 'https://lukeb1991.github.io/RidlRush/';  // ← your live address (share text + share image)
 const RESET_HOUR = 7;                                       // ← new riddles each day at this hour, UK time
-const LAUNCH     = '2026-10-06';                            // ← date of Riddle No. 1 (UK time)
+const LAUNCH     = '2026-10-07';                            // ← date of Riddle No. 1 (UK time)
 const PER_DAY = 3, LIVES = 3, SECS = 60, HINT_AT = 30;
 
 /* ================= Riddles =================
@@ -289,7 +289,7 @@ const R = (q, a, h, o = {}) => ({q, a, h, ...o});
 const DAYS = [
   [ R("I'm tall when I'm young and short when I'm old. What am I?", ["candle"], "I glow brightest in the dark."),
     R("The more you take, the more you leave behind. What am I?", ["footsteps","footstep","steps","footprints","footprint"], "Think about what you create when you walk."),
-    R("What walks on four legs in the morning, two legs at noon and three legs in the evening?", ["man","human","humans","person","people","human being","mankind","humanity"], "Think of a whole lifetime as a single day.", {d:"A human"}) ],
+    R("Mary's father has five daughters: Nana, Nene, Nini and Nono. What is the fifth daughter called?", ["mary"], "Read the first word again.", {d:"Mary"}) ],
   [ R("What has hands but can't clap?", ["clock","watch"], "You'll find me on a wall or a wrist."),
     R("What starts with T, ends with T and has T in it?", ["teapot","tea pot"], "Time for a brew."),
     R("I'm a word of three letters. Add two more, and fewer there will be. What word am I?", ["few"], "Read it again, very literally.", {d:"Few", x:true}) ],
